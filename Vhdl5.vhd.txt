@@ -1,0 +1,33 @@
+ library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+
+entity compt99 is
+port(clk : in std_logic;
+C1,C2 : out std_logic_vector(3 downto 0));
+end entity; 
+
+architecture com99ar of compt99 is 
+signal CC1,CC2 : std_logic_vector(3 downto 0);
+signal HH : std_logic;
+component div_f 
+port(clkin : in std_logic;
+clkout : out std_logic);
+end component;
+begin 
+portee: div_f port map (clk,HH);
+process(clk)
+begin 
+if (clk'event and clk='1') then
+if HH='1' then  CC1<=CC1+1;
+if CC1="1001" then 
+CC1<="0000";
+CC2<=CC2+1;
+if CC2="1001" then 
+CC2<="0000";
+end if;
+end if;
+end if;
+end if; 
+end process;
+end architecture;

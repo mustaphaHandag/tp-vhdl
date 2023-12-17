@@ -1,0 +1,39 @@
+LIBRARY IEEE;
+USE IEEE.STD_LOGIC_1164.ALL;
+USE IEEE.NUMERIC_STD.ALL;
+USE IEEE.STD_LOGIC_UNSIGNED.ALL;
+ENTITY compteur IS 
+PORT (RST ,clk,Ena:IN std_logic ;
+      S : INOUT std_logic_vector(6 downto 0 ));
+      END ENTITY ;
+ARCHITECTURE archcopmt16 OF compteur IS 
+ signal H: std_logic;
+ signal Q: std_logic_vector(3 downto 0);
+component diviseur 
+port (clkin : in std_logic;
+clkout : out std_logic);
+end component;
+component seg7 
+port
+(E: in std_logic_vector(3 downto 0);
+S: out std_logic_vector(6 downto 0));
+end component; 
+component compteurinter  
+PORT (RST ,clk,Ena:IN std_logic ;
+      Z : OUT std_logic_vector(3 downto 0 ));
+      END component ;
+	
+begin
+
+U0: diviseur port map(clk,H);
+U1: seg7 port map(Q,S);
+U2: compteurinter port map (RST,H,Ena,Q);
+
+PROCESS (clk,RST)
+begin
+
+if(RST='1') then S<="0000000";
+elsif(clk ='1' and clk'event) then S <= S+1;
+end if;
+end process;
+end architecture;

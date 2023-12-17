@@ -1,0 +1,20 @@
+Library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_arith.all;
+entity MUX4 is
+port(E0,E1,E2,E3 : in std_logic_vector(1 downto 0);
+SEL : in std_logic_vector(1 downto 0);
+Z : out std_logic_vector(1 downto 0));
+end entity;
+architecture Mux_structure of MUX4 is
+begin
+process(SEL)
+begin
+case SEL is
+when "00" => Z<= E0;
+when "01" => Z<= E1;
+when "10" => Z<= E2;
+when others => Z<= E3;
+end case;
+end process;
+end Mux_structure;

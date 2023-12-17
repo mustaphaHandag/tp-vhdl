@@ -1,0 +1,74 @@
+LIBRARY IEEE;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
+
+entity feux_tricolors is 
+port( clk, DET,RST : in std_logic ;
+R1,O1,V1,R2,O2,V2 : out std_logic );
+end feux_tricolors;
+Architecture MACHINE_feux of feux_tricolors is 
+Type etat is (E0,E1,E2,E3,E4,E5);
+signal etat_pr,etat_fu : etat :=E0;
+signal H :std_logic;
+signal t : integer range 0 to 30000:=0;
+
+component div_f 
+port (clkin : in std_logic;
+clkout : out std_logic);
+end component;
+
+begin 
+U: div_f  port map(clk,H);
+intialisation : process(H)
+begin 
+if RST='1' then etat_pr<=E0;
+elsif (H'event and H='1') then  etat_pr<=etat_fu;
+end if;
+
+end process intialisation ;
+
+diag : process(etat_pr,DET,H)
+begin
+
+
+if (H'event and H='1')then 
+case etat_pr is 
+when E0=> R1<='0';O1<='0';V1<='1';R2<='1';O2<='0';V2<='0';
+if (DET='1' and t>=30) then etat_fu<=E1;
+t<=0;
+else t<=t+1;
+end if; 
+when E1 => R1<='0';O1<='1';V1<='0';R2<='1';O2<='0';V2<='0';
+if (t>=5 ) then etat_fu<=E2;
+t<=0;
+else t<=t+1;
+end if;
+when E2=> R1<='1';O1<='0';V1<='0';R2<='1';O2<='0';V2<='0';
+IF (t>=5) then etat_fu<=E3; t<=0;
+else t<=t+1;
+end if;
+
+when E3=>R1<='1';O1<='0';V1<='0';R2<='0';O2<='0';V2<='1';
+if (t>=15) then etat_fu<=E4; t<=0;
+else t<=t+1;
+end if;
+
+when E4=>R1<='1';O1<='0';V1<='0';R2<='0';O2<='1';V2<='0';
+if (t>=5) then etat_fu<=E5; t<=0;
+else t<=t+1;
+end if;
+
+when E5=>R1<='1';O1<='0';V1<='0';R2<='1';O2<='0';V2<='0';
+if (t>=5) then etat_fu<=E0; t<=0;
+else t<=t+1;
+end if;
+
+
+end case;
+end if;
+end process diag;
+end architecture;
+
+
+

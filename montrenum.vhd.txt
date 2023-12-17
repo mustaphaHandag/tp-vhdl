@@ -1,0 +1,68 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+use ieee.numeric_std.all;
+USE ieee.std_logic_arith.all;
+
+entity montrenum is 
+port(clk,RST : in std_logic ;
+     SS1,SS2,MM1,MM2,HH1,HH2: out std_logic_vector(6 downto 0));
+	  end entity;
+	  
+architecture archi_montre of montrenum is 
+
+signal H: std_logic;
+signal S1: std_logic_vector(3 downto 0);
+signal S2: std_logic_vector(3 downto 0);
+signal M1: std_logic_vector(3 downto 0);
+signal M2: std_logic_vector(3 downto 0);
+signal H1: std_logic_vector(3 downto 0);
+signal H2: std_logic_vector(3 downto 0);
+
+component div_freq 
+port (clkin: in std_logic;
+clkout:out std_logic);
+
+end component; 
+component trans_seg7 
+ port
+(E: in std_logic_vector(3 downto 0);
+S: out std_logic_vector(6 downto 0));
+end component;
+BEGIN 
+porte1: div_freq  port map(clk,H);
+U0 : trans_seg7 port map (S1,SS1);
+U1 : trans_seg7 port map (S2,SS2);
+U2 : trans_seg7 port map (M1,MM1);
+U3 : trans_seg7 port map (M2,MM2);
+U4 : trans_seg7 port map (H1,HH1);
+U5 : trans_seg7 port map (H2,HH2);
+
+ process (H,RST)
+begin 
+
+if (RST='0') then S1<=(others=>'0');S2<=(others=>'0');M1<=(others=>'0');M2<=(others=>'0');H1<=(others=>'0');H2<=(others=>'0');
+elsif (H'event and H='1')  then S1<=S1+1;
+
+if S1="1001" then S2<=S2+1 ; S1<=(others=>'0');
+
+if (S2="0101" and S1="1001")then  S1<=(others=>'0') ; S2<=(others=>'0') ; M1 <=M1+1;
+
+if (M1="1001") then M1<=(others=>'0') ; S1<=(others=>'0') ; S2<=(others=>'0') ; M2<=M2+1;
+
+if (M2="0101") then M1<=(others=>'0') ; S1<=(others=>'0') ; S2<=(others=>'0') ; M2<=(others=>'0');H1<=H1+1;
+
+if(H1="0011") then  S1<=(others=>'0') ; S2<=(others=>'0') ;M1<=(others=>'0') ; M2<=(others=>'0');H1<=(others=>'0');H2<=H2+1;
+
+if (H2="0010") then S1<=(others=>'0') ; S2<=(others=>'0') ; M1<=(others=>'0') ; M2<=(others=>'0');H1<=(others=>'0');H2<=(others=>'0');
+if (H1="0010")and (H2="0011") then  S1<=(others=>'0') ; S2<=(others=>'0') ; M1<=(others=>'0') ; M2<=(others=>'0');H1<=(others=>'0');H2<=(others=>'0');
+end if;
+end if;
+end if;
+end if;
+end if;
+end if;
+end if;
+end if;
+end process;
+end architecture;

@@ -1,0 +1,82 @@
+Library ieee;
+USE IEEE.STD_LOGIC_1164.ALL;
+entity problem2 is
+port(DET,RST,h:in std_logic;
+r1,o1,v1,r2,o2,v2:out std_logic);
+end problem2;
+architecture arch of problem2 is
+Type etat is (E0,E1,E2,E3,E4,E5);
+signal etatp , etatf : etat;
+signal t:integer range 0 to 30000;
+signal clk: std_logic;
+
+COMPONENT div_freq
+PORT ( CLKIN : in std_logic;
+CLKOUT : out std_logic);
+END component;
+BEGIN 
+
+PORTE1: div_freq port map(h,clk);
+process(h,RST)
+begin
+if RST='1' then etatp <=E0;
+elsif h'event and h= '1'
+then etatp <= etatf ;
+end if;
+end process;
+
+process(etatp,DET,clk)
+begin 
+if (clk'event and clk='1')then
+case etatp is 
+when E0=> v1<='1'; r2<='1'; o1<='0';r1<='0';v2<='0';o2<='0';
+if (DET='1' and t>=30) then
+etatf<=E1;
+t<=0;
+else t<=t+1;
+end if;
+when E1=> o1<='1';r2<='1';r1<='0';v1<='0';o2<='0';v2<='0';
+if (t>=5) then etatf<=E2;
+t<=0;
+else 
+t<=t+1;
+end if;
+
+when E2 => o1<='0';r2<='1';r1<='1';v1<='0';o2<='0';v2<='0';
+if (t>=5 ) then etatf<=E3;
+t<=0;
+else
+t<= t + 1;
+end if;
+
+when E3=> v1<='0'; r2<='0'; o1<='0';r1<='1';v2<='1';o2<='0';
+if t>=15 then etatf<=E4;
+t<=0;
+else
+t<=t+1;
+end if;
+
+when E4=> v1<='0'; r2<='0'; o1<='0';r1<='1';v2<='0';o2<='1';
+if t>=5 then etatf<=E5;
+t<=0;
+else
+t<=t+1;
+end if;
+when E5=> v1<='0'; r2<='1'; o1<='0';r1<='1';v2<='0';o2<='0';
+if t>=5 then
+etatf<=E0;
+else
+t<=t+1;
+end if;
+end case;
+end if;
+end process;
+end architecture;
+
+
+
+
+
+
+
+
