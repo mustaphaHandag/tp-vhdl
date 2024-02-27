@@ -1,1 +1,2 @@
 # tp-vhdl
+Une implémentation sur une carte FPGA de la conception numérique VHDL comprenant les portes logiques (AND, OR, etc.), les blocs de calcul (comme l'additionneur 1 bit et l'additionneur 4 bits), ainsi que d'autres unités de calcul. Cette implémentation inclut également la création d'un feu tricolore et d'une horloge numérique basée sur des machines à états, tous deux étant exécutés sur la carte FPGA.
